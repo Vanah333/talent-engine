@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}{{ candidate.first_name }} {{ candidate.last_name }} — Talent Engine{% endblock %}
+{% block content %}
+<div class="detail-head">
+  <div>
+    <a href="{% url 'dashboard' %}" class="back">← Retour au classement</a>
+    <p class="eyebrow">PROFIL CANDIDAT</p>
+    <h1>{{ candidate.first_name }} {{ candidate.last_name }}</h1>
+    <p>{{ candidate.email }} · {{ candidate.city|default:"Ville non renseignée" }}</p>
+  </div>
+  <div class="score-card"><span>Score</span><strong>{{ candidate.score }}</strong><small>/100</small><div class="badge {{ candidate.status|lower }}">{{ candidate.get_status_display }}</div></div>
+</div>
+
+<div class="detail-grid">
+<section class="panel">
+<h2>Profil</h2>
+<div class="profile-list">
+<div><span>Formation</span><strong>{{ candidate.get_education_level_display }}</strong></div>
+<div><span>Expérience</span><strong>{{ candidate.years_experience }} an(s)</strong></div>
+<div><span>Projets</span><strong>{{ candidate.projects_count }}</strong></div>
+<div><span>Travail en équipe</span><strong>{% if candidate.teamwork %}Oui{% else %}Non{% endif %}</strong></div>
+</div>
+<h3>Compétences</h3>
+<div class="tags">{% for skill in candidate.skills %}<span>{{ skill }}</span>{% empty %}<span>Aucune</span>{% endfor %}</div>
+<h3>Motivation</h3>
+<p class="motivation">{{ candidate.motivation }}</p>
+</section>
+
+<section class="panel">
+<h2>Décomposition du score</h2>
+{% for name, points in candidate.score_breakdown.items %}
+<div class="bar-row"><div><span>{{ name }}</span><strong>{{ points }} pts</strong></div><div class="bar"><i style="width: {% if name == 'Formation' %}{% widthratio points 15 100 %}{% elif name == 'Expérience' %}{% widthratio points 20 100 %}{% elif name == 'Compétences' %}{% widthratio points 30 100 %}{% elif name == 'Projets' %}{% widthratio points 15 100 %}{% elif name == 'Travail en équipe' %}{% widthratio points 10 100 %}{% else %}{% widthratio points 10 100 %}{% endif %}%"></i></div></div>
+{% endfor %}
+<div class="total-line"><span>Total</span><strong>{{ candidate.score }}/100</strong></div>
+</section>
+</div>
+
+<div class="notice"><strong>Important :</strong> le score est un outil de priorisation et ne remplace pas l'examen humain d'une candidature.</div>
+{% endblock %}

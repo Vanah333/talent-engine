@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Talent Engine{% endblock %}
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">SKULLVI · TALENT ENGINE</p>
+    <h1>Qualifier les talents.<br><span>Prioriser intelligemment.</span></h1>
+    <p class="hero-text">Une première couche de qualification transparente pour aider les équipes à examiner les candidatures dans le bon ordre.</p>
+  </div>
+  <a href="{% url 'candidate_create' %}" class="button primary">Déposer une candidature</a>
+</section>
+
+<section class="stats">
+  <div class="stat"><small>CANDIDATS</small><strong>{{ total }}</strong></div>
+  <div class="stat"><small>PRIORITAIRES</small><strong>{{ priority }}</strong></div>
+  <div class="stat"><small>À EXAMINER</small><strong>{{ pending }}</strong></div>
+  <div class="stat"><small>SCORE MOYEN</small><strong>{{ average }}/100</strong></div>
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <div>
+      <h2>Classement des candidats</h2>
+      <p>Trié automatiquement par score décroissant.</p>
+    </div>
+    <form class="filters" method="get">
+      <input name="q" value="{{ query }}" placeholder="Rechercher...">
+      <select name="status">
+        <option value="">Tous</option>
+        <option value="PRIORITY" {% if status_filter == "PRIORITY" %}selected{% endif %}>Prioritaires</option>
+        <option value="PENDING" {% if status_filter == "PENDING" %}selected{% endif %}>À examiner</option>
+        <option value="LOW" {% if status_filter == "LOW" %}selected{% endif %}>Faible priorité</option>
+      </select>
+      <button class="button" type="submit">Filtrer</button>
+    </form>
+  </div>
+
+  {% if candidates %}
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th>#</th><th>Candidat</th><th>Profil</th><th>Compétences</th><th>Score</th><th>Priorité</th><th></th></tr></thead>
+    <tbody>
+    {% for candidate in candidates %}
+      <tr>
+        <td class="muted">{{ forloop.counter }}</td>
+        <td><strong>{{ candidate.first_name }} {{ candidate.last_name }}</strong><br><span class="muted">{{ candidate.email }}</span></td>
+        <td>{{ candidate.get_education_level_display }} · {{ candidate.years_experience }} an(s)</td>
+        <td><span class="skill-count">{{ candidate.skills|length }} compétence(s)</span></td>
+        <td><strong class="score">{{ candidate.score }}</strong><span class="muted">/100</span></td>
+        <td><span class="badge {{ candidate.status|lower }}">{{ candidate.get_status_display }}</span></td>
+        <td><a class="details" href="{% url 'candidate_detail' candidate.pk %}">Voir →</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+  {% else %}
+    <div class="empty"><div class="empty-icon">◎</div><h3>Aucune candidature</h3><p>Commence par déposer le premier profil.</p><a class="button primary" href="{% url 'candidate_create' %}">Créer une candidature</a></div>
+  {% endif %}
+</section>
+
+<section class="method">
+  <div><span>01</span><h3>Collecter</h3><p>Informations essentielles, formation, expérience, compétences, projets et motivation.</p></div>
+  <div><span>02</span><h3>Scorer</h3><p>Un barème transparent sur 100 points, calculé de manière déterministe.</p></div>
+  <div><span>03</span><h3>Prioriser</h3><p>Le classement aide l'humain à décider où commencer l'examen.</p></div>
+</section>
+{% endblock %}

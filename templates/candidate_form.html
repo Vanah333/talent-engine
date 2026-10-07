@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Nouvelle candidature — Talent Engine{% endblock %}
+{% block content %}
+<div class="form-header">
+  <p class="eyebrow">CANDIDATURE</p>
+  <h1>Ajouter un candidat</h1>
+  <p>Les informations saisies seront évaluées par un score transparent sur 100.</p>
+</div>
+
+<form method="post" class="form-card">
+{% csrf_token %}
+{% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}
+
+<div class="form-section"><h2>Informations personnelles</h2>
+<div class="grid-2">
+  {% for field in form %}
+    {% if field.name == "first_name" or field.name == "last_name" or field.name == "email" or field.name == "phone" or field.name == "city" or field.name == "education_level" %}
+    <div class="field">
+      {{ field.label_tag }}{{ field }}{% for error in field.errors %}<small class="error">{{ error }}</small>{% endfor %}
+    </div>
+    {% endif %}
+  {% endfor %}
+</div></div>
+
+<div class="form-section"><h2>Expérience et réalisations</h2>
+<div class="grid-2">
+  <div class="field">{{ form.years_experience.label_tag }}{{ form.years_experience }}{% for error in form.years_experience.errors %}<small class="error">{{ error }}</small>{% endfor %}</div>
+  <div class="field">{{ form.projects_count.label_tag }}{{ form.projects_count }}{% for error in form.projects_count.errors %}<small class="error">{{ error }}</small>{% endfor %}</div>
+</div>
+<div class="checkbox-line">{{ form.teamwork }} {{ form.teamwork.label_tag }}</div>
+</div>
+
+<div class="form-section"><h2>Compétences</h2>
+<p class="help">Les compétences ci-dessous participent au score technique.</p>
+<div class="skills">{{ form.available_skills }}</div>
+</div>
+
+<div class="form-section"><h2>Motivation</h2>
+<div class="field">{{ form.motivation.label_tag }}{{ form.motivation }}{% for error in form.motivation.errors %}<small class="error">{{ error }}</small>{% endfor %}</div>
+</div>
+
+<div class="form-actions"><a href="{% url 'dashboard' %}" class="button">Annuler</a><button type="submit" class="button primary">Évaluer la candidature</button></div>
+</form>
+{% endblock %}
